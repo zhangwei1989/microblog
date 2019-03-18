@@ -1,0 +1,103 @@
+2019-03-14 15:47:27,622 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 15:47:32,345 ERROR: Exception on /edit_profile [GET] [in /Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/routes.py", line 72, in edit_profile
+    form = EditProfileForm()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/wtforms/form.py", line 212, in __call__
+    return type.__call__(cls, *args, **kwargs)
+TypeError: __init__() missing 1 required positional argument: 'original_username'
+2019-03-14 15:51:42,866 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 15:51:47,470 ERROR: Exception on /edit_profile [GET] [in /Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/routes.py", line 72, in edit_profile
+    form = EditProfileForm(current_user.username)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/wtforms/form.py", line 212, in __call__
+    return type.__call__(cls, *args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/forms.py", line 38, in __init__
+    super(EditProfileForm, self).init(*args, **kwargs)
+AttributeError: 'super' object has no attribute 'init'
+2019-03-14 15:52:27,189 ERROR: Exception on /edit_profile [GET] [in /Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/routes.py", line 72, in edit_profile
+    form = EditProfileForm(current_user.username)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/wtforms/form.py", line 212, in __call__
+    return type.__call__(cls, *args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/forms.py", line 38, in __init__
+    super(EditProfileForm, self).__init__(*args, **kwargs)
+AttributeError: 'super' object has no attribute 'init'
+2019-03-14 15:52:30,255 ERROR: Exception on /edit_profile [GET] [in /Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/routes.py", line 72, in edit_profile
+    form = EditProfileForm(current_user.username)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/wtforms/form.py", line 212, in __call__
+    return type.__call__(cls, *args, **kwargs)
+  File "/Users/zhangwei/Downloads/projects/microblog/app/forms.py", line 38, in __init__
+    super(EditProfileForm, self).__init__(*args, **kwargs)
+AttributeError: 'super' object has no attribute 'init'
+2019-03-14 15:52:37,996 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:17:21,903 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:17:27,457 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:55:13,602 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:56:16,458 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:56:36,068 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:57:06,621 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 16:57:45,742 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 17:00:05,474 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 17:13:22,684 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
+2019-03-14 17:33:48,723 INFO: Microblog startup [in /Users/zhangwei/Downloads/projects/microblog/app/__init__.py:45]
