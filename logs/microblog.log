@@ -32,3 +32,23 @@ Traceback (most recent call last):
   File "/Users/zhangwei/Downloads/projects/microblog/app/routes.py", line 12, in index
     form = PostForm()
 TypeError: PostForm() missing 1 required positional argument: 'FlaskForm'
+2019-03-20 14:57:14,379 INFO: Microblog startup [in ./app/__init__.py:80]
+2019-03-20 14:58:02,559 ERROR: Unhandled exception [in ./app/tasks.py:50]
+Traceback (most recent call last):
+  File "./app/tasks.py", line 47, in export_posts
+    sync=True)
+  File "./app/email.py", line 16, in send_email
+    mail.send(msg)
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_mail.py", line 491, in send
+    with self.connect() as connection:
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_mail.py", line 144, in __enter__
+    self.host = self.configure_host()
+  File "/Users/zhangwei/Downloads/projects/microblog/venv/lib/python3.7/site-packages/flask_mail.py", line 165, in configure_host
+    host.login(self.mail.username, self.mail.password)
+  File "/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/python3.7/smtplib.py", line 730, in login
+    raise last_exception
+  File "/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/python3.7/smtplib.py", line 721, in login
+    initial_response_ok=initial_response_ok)
+  File "/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/python3.7/smtplib.py", line 642, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. Learn more at\n5.7.8  https://support.google.com/mail/?p=BadCredentials n15sm3089718pgc.92 - gsmtp')
