@@ -57,9 +57,9 @@ class SearchableMixin(object):
         for obj in cls.query:
             remove_from_index(cls.__tablename__, obj)
 
-
-db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
-db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
+# 生成环境还没有配置好 elasticsearch, 暂时注释掉
+# db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
+# db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
 
 class PaginatedAPIMixin(object):
     @staticmethod
