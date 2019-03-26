@@ -44,7 +44,7 @@ def index():
         if posts.has_prev else None
     return render_template('index.html', title='Home', form=form,
                            posts=posts.items, next_url=next_url,
-                           prev_url=prev_url)
+                           prev_url=prev_url, pagination=posts)
 
 
 @bp.route('/explore')
@@ -59,7 +59,31 @@ def explore():
         if posts.has_prev else None
     return render_template('index.html', title=_('Explore'),
                            posts=posts.items, next_url=next_url,
-                           prev_url=prev_url)
+                           prev_url=prev_url, pagination=posts)
+
+
+@bp.route('/show_post/<int:post_id>')
+@login_required
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', post=post)
+
+
+@bp.route('/new_post', methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        language = guess_language(form.post.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        post = Post(title=form.title.data, body=form.post.data, author=current_user,
+                    language=language)
+        db.session.add(post)
+        db.session.commit()
+        flash(_('Your post is now live!'))
+        return redirect(url_for('main.show_post', post_id=post.id))
+    return render_template('new_post.html', form=form)
 
 
 @bp.route('/search')
@@ -75,7 +99,7 @@ def search():
     prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1) \
         if page > 1 else None
     return render_template('search.html', title='Search', posts=posts
-                           , next_url=next_url, prev_url=prev_url)
+                           , next_url=next_url, prev_url=prev_url, pagination=posts)
 
 
 @bp.route('/user/<username>')
@@ -90,7 +114,7 @@ def user(username):
     prev_url = url_for('main.user', username=user.username,
                        page=posts.prev_num) if posts.has_prev else None
     return render_template('user.html', user=user, posts=posts.items,
-                           next_url=next_url, prev_url=prev_url)
+                           next_url=next_url, prev_url=prev_url, pagination=posts)
 
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
@@ -189,7 +213,7 @@ def messages():
     prev_url = url_for('main.messages', page=messages.prev_num) \
         if messages.has_prev else None
     return render_template('messages.html', messages=messages.items,
-                           next_url=next_url, prev_url=prev_url)
+                           next_url=next_url, prev_url=prev_url, pagination=messages)
 
 
 @bp.route('/notifications')

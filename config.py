@@ -18,7 +18,7 @@ class Config(object):
     MAIL_DEFAULT_SENDER = ('zhang', 'zhangwei19890518@gmail.com')
     ADMINS = ['zhangwei19890518@gmail.com']
 
-    POSTS_PER_PAGE = 3
+    POSTS_PER_PAGE = 20
 
     LANGUAGES = ['en', 'zh']
 

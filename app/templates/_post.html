@@ -1,29 +1,44 @@
-<table class="table table-hover">
-    <tr valign="top">
-        <td width="70px">
-            <a href="{{ url_for('main.user', username=post.author.username) }}">
-                <img src="{{ post.author.avatar(70) }}" />
-            </a>
-        </td>
-        <td>
-            {% set user_link %}
+<h3 class="text-primary">
+    <a href="{{ url_for('main.show_post', post_id=post.id) }}">{{ post.title }}</a>
+    <span >
+        {% set user_link %}
             <span class="user_popup">
                 <a href="{{ url_for('main.user', username=post.author.username) }}">{{ post.author.username }}</a>
             </span>
-            {% endset %}
-            {{ _('%(username)s said %(when)s', username=user_link, when=moment(post.timestamp).fromNow()) }}
-            <br>
-            <br><span id="post{{ post.id }}">{{ post.body }}</span>
-            {% if post.language and post.language != g.locale %}
-            <br><br>
-            <span id="translation{{ post.id }}">
-                <a href="javascript:translate(
-                '#post{{ post.id }}',
-                '#translation{{ post.id }}',
-                '{{ post.language }}',
-                '{{ g.locale }}');">{{ 'Translate' }}</a>
-            </span>
-            {% endif %}
-        </td>
-    </tr>
-</table>
+        {% endset %}
+        <small>
+            By:
+            {{ _('%(username)s', username=user_link) }}
+            <a href="{{ url_for('main.user', username=post.author.username) }}">
+                <img src="{{ post.author.avatar(30) }}" />
+            </a>
+        </small>
+    </span>
+
+</h3>
+<p>
+    <span id="post{{ post.id }}">
+        {{ post.body|striptags|truncate }}
+    </span>
+    <small><a href="{{ url_for('main.show_post', post_id=post.id) }}">Read More</a></small>
+    <!--
+    {% if post.language and post.language != g.locale %}
+    <br><br>
+        <span id="translation{{ post.id }}">
+            <a href="javascript:translate(
+            '#post{{ post.id }}',
+            '#translation{{ post.id }}',
+            '{{ post.language }}',
+            '{{ g.locale }}');">{{ 'Translate' }}</a>
+        </span>
+    {% endif %}
+    -->
+    <p>
+        <small>
+            Comments: <a href="#">10</a>&nbsp;&nbsp;
+            Category: <a href="#">默认</a>
+            <span class="float-right">{{ moment(post.timestamp).format('LL') }}</span>
+        </small>
+    </p>
+</p>
+<hr>

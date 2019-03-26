@@ -1,26 +1,21 @@
 {% extends "base.html" %}
+{% from 'bootstrap/form.html' import render_form %}
 
 {% block app_content %}
-	<h1>Sign In</h1>
-  <form action="" method="post" novalidate>
-		{{ form.hidden_tag() }}
-		<p>
-			{{ form.username.label }}<br>
-			{{ form.username(size=32) }}
-			{% for error in form.username.errors %}
-			<span style="color: red">[{{ error }}]</span>
-			{% endfor %}
-		</p>
-		<p>
-			{{ form.password.label }}<br>
-			{{ form.password(size=32) }}
-			{% for error in form.password.errors %}
-			<span style="color: red;">[{{ error }}]</span>
-			{% endfor %}
-		</p>
-		<p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-		<p>{{ form.submit() }}</p>
-	</form>
-	<p>New User? <a href="{{ url_for('auth.register') }}">Click to register!</a></p>
-	<p>Forget Your Password? <a href="{{ url_for('auth.reset_password_request') }}">Click to Reset Password</a></p>
-{% endblock %}
+    <div class="container h-100">
+        <div class="row h-100 page-header justify-content-center align-items-center">
+            <h1>Sign In</h1>
+        </div>
+
+        <div class="row h-200 justify-content-center align-items-center">
+            <div class="col-6">
+                {{ render_form(form) }}
+            </div>
+
+            <div class="col-6 ml-3">
+                <p>New User? <a href="{{ url_for('auth.register') }}">Click to register!</a></p>
+                <p>Forget Your Password? <a href="{{ url_for('auth.reset_password_request') }}">Click to Reset Password</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock app_content %}

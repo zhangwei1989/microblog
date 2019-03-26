@@ -1,22 +1,33 @@
 {% extends "base.html" %}
+{% from 'bootstrap/pagination.html' import render_pager %}
 
 {% block app_content %}
-    <h1>Messages</h1>
-    {% for post in messages %}
-        {% include '_post.html' %}
+    <div class="row h-100 page-header justify-content-center align-items-center">
+        <h1>Messages</h1>
+    </div>
+
+    {% for message in messages %}
+        <table class="table">
+            <tr valign="top">
+                <td width="70px">
+                    <a href="{{ url_for('main.user', username=message.author.username) }}">
+                        <img src="{{ message.author.avatar(30) }}" />
+                    </a>
+                </td>
+                <td>
+                    {% set user_link %}
+                    <span class="user_popup">
+                        <a href="{{ url_for('main.user', username=message.author.username) }}">{{ message.author.username }}</a>
+                    </span>
+                    {% endset %}
+                    {{ _('%(username)s said %(when)s', username=user_link, when=moment(message.timestamp).fromNow()) }}
+                    <br>
+                    <br><span>{{ message.body }}</span>
+                </td>
+            </tr>
+        </table>
     {% endfor %}
-    <nav aria-label="...">
-        <ul class="pager">
-            <li class="previous{% if not prev_url %} disabled{% endif %}">
-                <a href="{{ prev_url or '#' }}">
-                    <span aria-hidden="true">&larr;</span>Newer messages
-                </a>
-            </li>
-            <li class="next{% if not next_url %} disabled{% endif %}">
-                <a href="{{ next_url or '#' }}">
-                    Older messages <span aria-hidden="true">&rarr;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-{% endblock %}
+    {% if messages %}
+        <div class="page-footer">{{ render_pager(pagination) }}</div>
+    {% endif %}
+{% endblock app_content %}

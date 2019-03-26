@@ -127,7 +127,7 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
 
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
+        return 'https://www.gravatar.com/avatar/{}?d=wavatar&s={}'.format(digest, size)
 
     def follow(self, user):
         if not self.is_following(user):
@@ -237,7 +237,8 @@ class Post(SearchableMixin, db.Model):
     __searchable__ = ['body']
 
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
+    body = db.Column(db.Text)
+    title = db.Column(db.String(60))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     language = db.Column(db.String(5))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
