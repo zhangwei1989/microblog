@@ -36,7 +36,7 @@
     <p>
         <small>
             Comments: <a href="#">10</a>&nbsp;&nbsp;
-            Category: <a href="#">默认</a>
+            Category: <a href="#">{{ post.category.name }}</a>
             <span class="float-right">{{ moment(post.timestamp).format('LL') }}</span>
         </small>
     </p>

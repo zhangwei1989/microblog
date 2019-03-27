@@ -7,8 +7,8 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask, request, current_app
 from config import Config
 from elasticsearch import Elasticsearch
-from app.extensions import db, migrate, login, mail, bootstrap, moment, babel
-from app.models import User, Post, Message, Notification, Task
+from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor
+from app.models import User, Post, Message, Notification, Task, Category
 
 
 def create_app(config_class=Config):
@@ -59,6 +59,7 @@ def register_extensions(app):
     bootstrap.init_app(app)
     moment.init_app(app)
     babel.init_app(app)
+    ckeditor.init_app(app)
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_URL'] else None
     app.redis = Redis.from_url(app.config['REDIS_URL'])
@@ -81,7 +82,7 @@ def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
         return {'db': db, 'User': User, 'Post': Post, 'Message': Message,
-                'Notification': Notification, 'Task': Task}
+                'Notification': Notification, 'Task': Task, 'Category': Category}
 
 
 @babel.localeselector

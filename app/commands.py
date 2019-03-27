@@ -8,22 +8,15 @@ def register(app):
     @click.option('--count', default=20, help='Quantity of posts, default is 20.')
     def forge(count):
         """Generate fake posts for every user."""
-        from faker import Faker
+        from app.fakes import fake_users, fake_categories, fake_posts
 
-        faker = Faker()
-        click.echo('Generating data...')
+        click.echo('Generating user...')
+        fake_users()
 
-        users = User.query.all()
-        for user in users:
-            for i in range(count):
-                post = Post(
-                    title=faker.sentence(5),
-                    body=faker.text(2000),
-                    author=user,
-                    timestamp=faker.date_time_this_year(),
-                    language='zh'
-                )
-                db.session.add(post)
+        click.echo('Generating category...')
+        fake_categories()
 
-        db.session.commit()
+        click.echo('Generating post...')
+        fake_posts()
+
         click.echo('Completed')

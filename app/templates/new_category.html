@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block app_content %}
+    <div class="container h-100">
+        <div class="row h-100 page-header justify-content-center align-items-center">
+            <h1>New Category</h1>
+        </div>
+
+        <div class="row h-200 justify-content-center align-items-center">
+            <div class="col-6">
+                {{ render_form(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock app_content %}

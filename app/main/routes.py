@@ -5,8 +5,8 @@ from flask_login import current_user, login_required
 from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
-from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm
-from app.models import User, Post, Message, Notification
+from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, CategoryForm
+from app.models import User, Post, Message, Notification, Category
 from app.translate import translate
 from app.main import bp
 
@@ -51,6 +51,19 @@ def new_post():
         flash(_('Your post is now live!'))
         return redirect(url_for('main.show_post', post_id=post.id))
     return render_template('new_post.html', form=form)
+
+
+@bp.route('/new_category', methods=['GET', 'POST'])
+@login_required
+def new_category():
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category = Category(name=form.name.data)
+        db.session.add(category)
+        db.session.commit()
+        flash(_('Your create a new category!'))
+        return redirect(url_for('main.index'))
+    return render_template('new_category.html', form=form)
 
 
 @bp.route('/search')

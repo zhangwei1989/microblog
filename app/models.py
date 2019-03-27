@@ -242,6 +242,7 @@ class Post(SearchableMixin, db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     language = db.Column(db.String(5))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -286,6 +287,24 @@ class Task(db.Model):
     def get_progress(self):
         job = self.get_rq_job()
         return job.meta.get('progress', 0) if job is not None else 100
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+
+    posts = db.relationship('Post', backref='category')
+
+    def __repr__(self):
+        return '<Category {}>'.format(self.name)
+
+    def delete(self):
+        default_category = Category.query.get(1)
+        posts = self.posts[:]
+        for post in posts:
+            post.category = default_category
+        db.session.delete(self)
+        db.session.commit()
 
 
 @login.user_loader
