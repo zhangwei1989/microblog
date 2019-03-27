@@ -19,6 +19,7 @@ def create_app(config_class=Config):
     register_blueprints(app)
     register_shell_context(app)
     register_logging(app)
+    register_template_context(app)
 
     return app
 
@@ -83,6 +84,13 @@ def register_shell_context(app):
     def make_shell_context():
         return {'db': db, 'User': User, 'Post': Post, 'Message': Message,
                 'Notification': Notification, 'Task': Task, 'Category': Category}
+
+
+def register_template_context(app):
+    @app.context_processor
+    def make_template_context():
+        categories = Category.query.order_by(Category.name).all()
+        return dict(categories=categories)
 
 
 @babel.localeselector

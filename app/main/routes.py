@@ -66,6 +66,15 @@ def new_category():
     return render_template('new_category.html', form=form)
 
 
+@bp.route('/category/<int:category_id>')
+def show_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['POSTS_PER_PAGE']
+    posts = Post.query.with_parent(category).order_by(Post.timestamp.desc()).paginate(page, per_page)
+    return render_template('category.html', category=category, pagination=posts, posts=posts.items)
+
+
 @bp.route('/search')
 @login_required
 def search():

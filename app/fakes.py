@@ -37,11 +37,12 @@ def fake_posts(count=50):
     users = User.query.all()
     for user in users:
         for i in range(count):
+            ids = [x for x, in db.session.query(Category.id).all()]
             post = Post(
                 title=fake.sentence(5),
                 body=fake.text(2000),
                 author=user,
-                category=Category.query.get(random.randint(1, Category.query.count())),
+                category=Category.query.get(random.choice(ids)),
                 timestamp=fake.date_time_this_year(),
                 language='zh'
             )
