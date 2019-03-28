@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}{{ category.name }}{% endblock %}
 
@@ -14,7 +14,7 @@
                 {% include '_post.html' %}
             {% endfor %}
             {% if posts %}
-                <div class="page-footer">{{ render_pager(pagination, category_id=category.id) }}</div>
+                <div class="page-footer">{{ render_pagination(pagination, category_id=category.id) }}</div>
             {% endif %}
         </div>
         <div class="col-sm-4 sidebar pl-3">

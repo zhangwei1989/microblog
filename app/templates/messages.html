@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block app_content %}
     <div class="row h-100 page-header justify-content-center align-items-center">
@@ -28,6 +28,6 @@
         </table>
     {% endfor %}
     {% if messages %}
-        <div class="page-footer">{{ render_pager(pagination) }}</div>
+        <div class="page-footer">{{ render_pagination(pagination) }}</div>
     {% endif %}
 {% endblock app_content %}

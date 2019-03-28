@@ -241,8 +241,11 @@ class Post(SearchableMixin, db.Model):
     title = db.Column(db.String(60))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     language = db.Column(db.String(5))
+    can_comment = db.Column(db.Boolean, default=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+
+    comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -306,6 +309,26 @@ class Category(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(30))
+    email = db.Column(db.String(254))
+    site = db.Column(db.String(255))
+    body = db.Column(db.Text)
+    from_post_author = db.Column(db.Boolean, default=False)
+    is_hidden = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    replied_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
+    post = db.relationship('Post', back_populates='comments')
+    replies = db.relationship('Comment', back_populates='replied', cascade='all, delete-orphan')
+    replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
+
+    def __repr__(self):
+        return '<Comment {}: {}>'.format(self.id, self.body)
 
 @login.user_loader
 def load_user(id):

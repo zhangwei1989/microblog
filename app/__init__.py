@@ -8,7 +8,7 @@ from flask import Flask, request, current_app
 from config import Config
 from elasticsearch import Elasticsearch
 from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor
-from app.models import User, Post, Message, Notification, Task, Category
+from app.models import User, Post, Message, Notification, Task, Category, Comment
 
 
 def create_app(config_class=Config):
@@ -83,7 +83,8 @@ def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
         return {'db': db, 'User': User, 'Post': Post, 'Message': Message,
-                'Notification': Notification, 'Task': Task, 'Category': Category}
+                'Notification': Notification, 'Task': Task,
+                'Category': Category, 'Comment': Comment}
 
 
 def register_template_context(app):

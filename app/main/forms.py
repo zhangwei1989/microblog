@@ -1,7 +1,7 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, SelectField
-from wtforms.validators import ValidationError, DataRequired, Length
+from wtforms import StringField, SubmitField, TextAreaField, SelectField, HiddenField
+from wtforms.validators import ValidationError, DataRequired, Length, Email, Optional, URL
 from flask_babel import _, lazy_gettext as _l
 from flask_ckeditor import CKEditorField
 from app.models import User, Category
@@ -43,6 +43,20 @@ class CategoryForm(FlaskForm):
     def validate_name(self, field):
         if Category.query.filter_by(name=field.data).first():
             raise ValidationError('Name already in use.')
+
+
+class CommentForm(FlaskForm):
+    author = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(1, 254)])
+    site = StringField('Site', validators=[Optional(), URL(), Length(0, 255)])
+    body = TextAreaField('Comment', validators=[DataRequired()])
+    submit = SubmitField()
+
+
+class UserCommentForm(CommentForm):
+    author = HiddenField()
+    email = HiddenField()
+    site = HiddenField()
 
 
 class SearchForm(FlaskForm):

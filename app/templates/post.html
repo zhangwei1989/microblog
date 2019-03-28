@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% from 'bootstrap/form.html' import render_form %}
 
 {% block title %}{{ post.title }}{% endblock %}
 
@@ -34,6 +36,65 @@
                     </div>
                 </div>
             </div>
+            <div class="comments" id="comments">
+                <h3>
+                    {{ pagination.total }} Comments
+                    <small>
+                        <a href="{{ url_for('main.show_post', post_id=post.id, page=pagination.pages or 1) }}#comments">latest</a>
+                    </small>
+                </h3>
+                {% if comments %}
+                    <ul class="list-group">
+                        {% for comment in comments %}
+                            <li class="list-group-item list-group-item-action flex-column">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">
+                                        <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}"
+                                        target="_blank">
+                                           {{ comment.author }}
+                                        </a>
+                                        {% if comment.from_post_author %}
+                                            <span class="badge badge-secondary badge-sm">Author</span>
+                                        {% endif %}
+                                        {% if comment.replied %}
+                                            <span class="badge badge-secondary">Reply</span>
+                                        {% endif %}
+                                    </h5>
+                                    <small>{{ moment(comment.timestamp).fromNow() }}</small>
+                                </div>
+                                {% if comment.replied %}
+                                    <p class="alert alert-dark reply-body">{{ comment.replied.author }}:
+                                        <br>{{ comment.replied.body }}
+                                    </p>
+                                {% endif %}
+                                <p class="mb-1">{{ comment.body }}</p>
+                                <div class="float-right">
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       href="{{ url_for('main.reply_comment', comment_id=comment.id) }}">Reply</a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="tip"><h5>No comments.</h5></div>
+                {% endif %}
+            </div>
+            {% if comments %}
+                {{ render_pagination(pagination, fragment='#comments') }}
+            {% endif %}
+            {% if request.args.get('reply') %}
+                <div class="alert alert-dark">
+                    Reply to <strong>{{ request.args.get('author') }}</strong>:
+                    <a class="float-right" href="{{ url_for('main.show_post', post_id=post.id) }}">Cancel</a>
+                </div>
+            {% endif %}
+            {% if post.can_comment %}
+                <div id="comment-form">
+                    {{ render_form(form, action=request.full_path) }}
+                </div>
+            {% else %}
+                <div class="tip"><h5>Comment disabled.</h5></div>
+            {% endif %}
         </div>
         <div class="col-sm-4 sidebar pl-3">
             {% include "_sidebar.html" %}

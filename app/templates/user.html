@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block app_content %}
     <div class="row">
@@ -47,6 +47,6 @@
 		{% include '_post.html' %}
     {% endfor %}
     {% if posts %}
-        <div class="page-footer">{{ render_pager(pagination, username=user.username) }}</div>
+        <div class="page-footer">{{ render_pagination(pagination, username=user.username) }}</div>
     {% endif %}
 {% endblock %}

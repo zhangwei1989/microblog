@@ -5,8 +5,8 @@ from flask_login import current_user, login_required
 from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
-from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, CategoryForm
-from app.models import User, Post, Message, Notification, Category
+from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, CategoryForm, CommentForm, UserCommentForm
+from app.models import User, Post, Message, Notification, Category, Comment
 from app.translate import translate
 from app.main import bp
 
@@ -30,10 +30,51 @@ def index():
                            posts=posts.items, pagination=posts)
 
 
-@bp.route('/show_post/<int:post_id>')
+@bp.route('/show_post/<int:post_id>', methods=['GET', 'POST'])
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('post.html', post=post)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['COMMENTS_PER_PAGE']
+    comments = Comment.query.with_parent(post).filter_by(is_hidden=False).order_by(Comment.timestamp.asc()).paginate(
+        page, per_page)
+
+    if current_user.is_authenticated:
+        form = UserCommentForm()
+        form.author.data = current_user.username
+        form.email.data = current_user.email
+        form.site.data = url_for('main.index')
+        from_post_author = True if post.author == current_user else False
+    else:
+        form = CommentForm()
+        from_post_author = False
+
+    if form.validate_on_submit():
+        author = form.author.data
+        email = form.email.data
+        site = form.site.data
+        body = form.body.data
+        comment = Comment(
+            author=author, email=email, site=site, body=body,
+            from_post_author=from_post_author, post=post)
+        replied_id = request.args.get('reply')
+        if replied_id:
+            replied_comment = Comment.query.get_or_404(replied_id)
+            comment.replied = replied_comment
+        db.session.add(comment)
+        db.session.commit()
+        flash('Comment published.')
+        return redirect(url_for('main.show_post', post_id=post_id))
+    return render_template('post.html', post=post, pagination=comments, form=form, comments=comments.items)
+
+
+@bp.route('/reply/comment/<int:comment_id>')
+def reply_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    if not comment.post.can_comment:
+        flash('Comment is disabled.', 'warning')
+        return redirect(url_for('main.show_post', post_id=comment.post_id))
+    return redirect(
+        url_for('main.show_post', post_id=comment.post_id, reply=comment_id, author=comment.author) + '#comment-form')
 
 
 @bp.route('/new_post', methods=['GET', 'POST'])
@@ -44,8 +85,9 @@ def new_post():
         language = guess_language(form.post.data)
         if language == 'UNKNOWN' or len(language) > 5:
             language = ''
+        category = Category.query.get(form.category.data)
         post = Post(title=form.title.data, body=form.post.data, author=current_user,
-                    language=language)
+                    language=language, category=category)
         db.session.add(post)
         db.session.commit()
         flash(_('Your post is now live!'))
