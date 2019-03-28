@@ -9,6 +9,14 @@ from sqlalchemy.exc import IntegrityError
 fake = Faker('zh')
 
 
+def fake_admin(username, email, password):
+    admin = User(username=username, email=email, is_admin=True)
+    admin.set_password(password)
+
+    db.session.add(admin)
+    db.session.commit()
+
+
 def fake_users(count=5):
     for i in range(count):
         user = User(username=fake.name(), email=fake.email())
