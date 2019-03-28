@@ -6,6 +6,7 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_babel import Babel
 from flask_ckeditor import CKEditor
+from flask_wtf import CSRFProtect
 
 
 db = SQLAlchemy()
@@ -18,3 +19,4 @@ bootstrap = Bootstrap()
 moment = Moment()
 babel = Babel()
 ckeditor = CKEditor()
+csrf = CSRFProtect()

@@ -28,3 +28,7 @@ class Config(object):
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
 
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
+
+    # Admin
+    ADMIN_MANAGE_POST_PER_PAGE = 50
+    ADMIN_MANAGE_COMMENT_PER_PAGE = 50

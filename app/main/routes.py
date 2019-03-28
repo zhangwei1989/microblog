@@ -9,6 +9,7 @@ from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, C
 from app.models import User, Post, Message, Notification, Category, Comment
 from app.translate import translate
 from app.main import bp
+from app.utils import redirect_back
 
 
 @bp.before_app_request
@@ -93,6 +94,48 @@ def new_post():
         flash(_('Your post is now live!'))
         return redirect(url_for('main.show_post', post_id=post.id))
     return render_template('new_post.html', form=form)
+
+
+@bp.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    form = PostForm()
+    post = Post.query.get_or_404(post_id)
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.body = form.post.data
+        post.category = Category.query.get(form.category.data)
+        db.session.commit()
+        flash('Post updated.', 'success')
+        return redirect(url_for('main.show_post', post_id=post.id))
+    form.title.data = post.title
+    form.post.data = post.body
+    form.category.data = post.category_id
+    return render_template('/edit_post.html', form=form)
+
+
+@bp.route('/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted.', 'success')
+    return redirect_back()
+
+
+@bp.route('/post/<int:post_id>/set-comment', methods=['POST'])
+@login_required
+def set_comment(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.can_comment:
+        post.can_comment = False
+        flash('Comment disabled.', 'success')
+    else:
+        post.can_comment = True
+        flash('Comment enabled.', 'success')
+    db.session.commit()
+    return redirect_back()
 
 
 @bp.route('/new_category', methods=['GET', 'POST'])

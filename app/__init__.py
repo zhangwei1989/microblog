@@ -7,7 +7,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask, request, current_app
 from config import Config
 from elasticsearch import Elasticsearch
-from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor
+from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor, csrf
 from app.models import User, Post, Message, Notification, Task, Category, Comment
 
 
@@ -61,12 +61,16 @@ def register_extensions(app):
     moment.init_app(app)
     babel.init_app(app)
     ckeditor.init_app(app)
+    csrf.init_app(app)
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_URL'] else None
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('microblog-tasks', connection=app.redis)
 
 def register_blueprints(app):
+    from app.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+
     from app.api import bp as api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
 

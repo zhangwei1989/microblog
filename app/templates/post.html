@@ -42,6 +42,15 @@
                     <small>
                         <a href="{{ url_for('main.show_post', post_id=post.id, page=pagination.pages or 1) }}#comments">latest</a>
                     </small>
+                    {% if post.author == current_user or current_user.is_admin %}
+                        <form class="float-right" method="post"
+                              action="{{ url_for('main.set_comment', post_id=post.id, next=request.full_path) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                {% if post.can_comment %}Disable{% else %}Enable{% endif %} Comment
+                            </button>
+                        </form>
+                    {% endif %}
                 </h3>
                 {% if comments %}
                     <ul class="list-group">
@@ -71,6 +80,18 @@
                                 <div class="float-right">
                                     <a class="btn btn-outline-primary btn-sm"
                                        href="{{ url_for('main.reply_comment', comment_id=comment.id) }}">Reply</a>
+                                    {% if current_user.is_authenticated and comment.from_post_author %}
+                                       <a class="btn btn-outline-primary btn-sm" href="{{ url_for('main.send_message', recipient=current_user.username) }}">Message</a>
+                                    {% endif %}
+                                    {% if current_user.is_admin %}
+                                        <form class="inline" method="post"
+                                              action="{{ url_for('admin.delete_comment', comment_id=comment.id, next=request.full_path) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                    onclick="return confirm('Are you sure?');">Delete
+                                            </button>
+                                        </form>
+                                    {% endif %}
                                 </div>
                             </li>
                         {% endfor %}
