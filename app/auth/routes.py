@@ -1,12 +1,13 @@
 from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import _
 from app import db
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User
-from app.auth.email import send_password_reset_email
+from config import Operations
+from app.auth.email import send_password_reset_email, send_confirm_email
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -39,14 +40,43 @@ def register():
         return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data.lower())
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash(_('Congratulations, you are now a registered user!'))
+        send_confirm_email(user=user)
+        flash('Confirm email sent, check your inbox.', 'info')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', title=_('Register'),
                            form=form)
+
+
+@bp.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+
+    user = User.verify_token(token=token, operation=Operations.CONFIRM)
+    if user == current_user:
+        user.confirmed = True
+        db.session.commit()
+        flash('Account confirmed.', 'success')
+        return redirect(url_for('main.index'))
+    else:
+        flash('Invalid or expired token.', 'danger')
+        return redirect(url_for('auth.resend_confirm_email'))
+
+
+@bp.route('/resend-confirm-email')
+@login_required
+def resend_confirm_email():
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+
+    send_confirm_email(user=current_user)
+    flash('New email sent, check your inbox.', 'info')
+    return redirect(url_for('main.index'))
 
 
 @bp.route('/reset_password_request', methods=['GET', 'POST'])
@@ -69,7 +99,7 @@ def reset_password_request():
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    user = User.verify_reset_password_token(token)
+    user = User.verify_token(token, Operations.RESET_PASSWORD)
     if not user:
         return redirect(url_for('main.index'))
     form = ResetPasswordForm()

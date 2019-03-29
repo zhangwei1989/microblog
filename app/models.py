@@ -99,7 +99,8 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
-    is_admin=db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    confirmed = db.Column(db.Boolean, default=False)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     followed = db.relationship(
         'User', secondary=followers,
@@ -148,9 +149,9 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
         own = Post.query.filter_by(user_id=self.id)
         return followed.union(own).order_by(Post.timestamp.desc())
 
-    def get_reset_password_token(self, expires_in=600):
+    def get_jwt_token(self, operation, expires_in=600, **kwargs):
         return jwt.encode(
-            {'reset_password': self.id, 'exp': time() + expires_in},
+            {'id': self.id, 'operation': operation, 'exp': time() + expires_in, **kwargs},
             current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
     def new_messages(self):
@@ -225,13 +226,17 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
         return user
 
     @staticmethod
-    def verify_reset_password_token(token):
+    def verify_token(token, operation):
         try:
-            id = jwt.decode(token, current_app.config['SECRET_KEY'],
-                            algorithms=['HS256'])['reset_password']
+            jwt_code = jwt.decode(token, current_app.config['SECRET_KEY'],
+                            algorithms=['HS256'])
+            decode_id = jwt_code['id']
+            decode_operation = jwt_code['operation']
         except:
-            return
-        return User.query.get(id)
+            return False
+        if operation != decode_operation:
+            return False
+        return User.query.get(decode_id)
 
 
 class Post(SearchableMixin, db.Model):

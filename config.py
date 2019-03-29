@@ -32,3 +32,9 @@ class Config(object):
     # Admin
     ADMIN_MANAGE_POST_PER_PAGE = 50
     ADMIN_MANAGE_COMMENT_PER_PAGE = 50
+
+
+class Operations:
+    CONFIRM = 'confirm'
+    RESET_PASSWORD = 'reset_password'
+    CHANGE_EMAIL = 'change_email'
