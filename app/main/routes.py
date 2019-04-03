@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, g, \
-    jsonify, current_app
+    jsonify, current_app, abort
 from flask_login import current_user, login_required
 from flask_babel import _, get_locale
 from guess_language import guess_language
@@ -9,6 +9,7 @@ from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, C
 from app.models import User, Post, Message, Notification, Category, Comment
 from app.translate import translate
 from app.main import bp
+from app.decorators import admin_required, permission_required
 from app.utils import redirect_back
 
 
@@ -69,6 +70,7 @@ def show_post(post_id):
 
 
 @bp.route('/reply/comment/<int:comment_id>')
+@permission_required('COMMENT')
 def reply_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     if not comment.post.can_comment:
@@ -81,6 +83,9 @@ def reply_comment(comment_id):
 @bp.route('/new_post', methods=['GET', 'POST'])
 @login_required
 def new_post():
+    if not current_user.can('NEW_POST'):
+        abort(403)
+
     form = PostForm()
     if form.validate_on_submit():
         language = guess_language(form.post.data)
@@ -101,6 +106,11 @@ def new_post():
 def edit_post(post_id):
     form = PostForm()
     post = Post.query.get_or_404(post_id)
+
+    if (current_user != post.author and not current_user.can('MODERATE')) \
+            or not current_user.can('NEW_POST'):
+        abort(403)
+
     if form.validate_on_submit():
         post.title = form.title.data
         post.body = form.post.data
@@ -118,6 +128,9 @@ def edit_post(post_id):
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
+    if (current_user != post.author and not current_user.can('MODERATE')) \
+            or not current_user.can('NEW_POST'):
+        abort(403)
     db.session.delete(post)
     db.session.commit()
     flash('Post deleted.', 'success')
@@ -128,6 +141,11 @@ def delete_post(post_id):
 @login_required
 def set_comment(post_id):
     post = Post.query.get_or_404(post_id)
+
+    if (current_user != post.author and not current_user.can('MODERATE')) \
+            or not current_user.can('NEW_POST'):
+        abort(403)
+
     if post.can_comment:
         post.can_comment = False
         flash('Comment disabled.', 'success')
@@ -140,6 +158,7 @@ def set_comment(post_id):
 
 @bp.route('/new_category', methods=['GET', 'POST'])
 @login_required
+@permission_required('NEW_CATEGORY')
 def new_category():
     form = CategoryForm()
     if form.validate_on_submit():
@@ -206,6 +225,7 @@ def edit_profile():
 
 @bp.route('/follow/<username>')
 @login_required
+@permission_required('FOLLOW')
 def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -222,6 +242,7 @@ def follow(username):
 
 @bp.route('/unfollow/<username>')
 @login_required
+@permission_required('FOLLOW')
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:

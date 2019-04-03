@@ -1,5 +1,6 @@
 import click
 from app import db
+from app.models import Role
 
 
 def register(app):
@@ -15,6 +16,7 @@ def register(app):
         click.echo('Initing database...')
         db.drop_all()
         db.create_all()
+        Role.init_role()
 
         click.echo('Generating admin...')
         fake_admin(username, email, password)
@@ -28,15 +30,15 @@ def register(app):
         from app.fakes import fake_users, fake_categories, fake_posts, fake_comments
 
         click.echo('Generating user...')
-        fake_users()
+        fake_users(count)
 
         click.echo('Generating category...')
-        fake_categories()
+        fake_categories(count)
 
         click.echo('Generating post...')
-        fake_posts()
+        fake_posts(count)
 
         click.echo('Generating comment...')
-        fake_comments()
+        fake_comments(count)
 
         click.echo('Completed')

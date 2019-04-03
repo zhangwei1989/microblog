@@ -8,15 +8,15 @@ from flask import Flask, request, current_app
 from config import Config
 from elasticsearch import Elasticsearch
 from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor, csrf
-from app.models import User, Post, Message, Notification, Task, Category, Comment
+from app.models import User, Post, Message, Notification, Task, Category, Comment, Role
 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    register_extensions(app)
     register_blueprints(app)
+    register_extensions(app)
     register_shell_context(app)
     register_logging(app)
     register_template_context(app)
@@ -63,6 +63,10 @@ def register_extensions(app):
     ckeditor.init_app(app)
     csrf.init_app(app)
 
+    from app.api import bp as api_bp
+    csrf.exempt(api_bp)
+
+
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_URL'] else None
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('microblog-tasks', connection=app.redis)
@@ -88,7 +92,7 @@ def register_shell_context(app):
     def make_shell_context():
         return {'db': db, 'User': User, 'Post': Post, 'Message': Message,
                 'Notification': Notification, 'Task': Task,
-                'Category': Category, 'Comment': Comment}
+                'Category': Category, 'Comment': Comment, 'Role': Role}
 
 
 def register_template_context(app):

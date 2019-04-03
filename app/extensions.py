@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, AnonymousUserMixin
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -20,3 +20,13 @@ moment = Moment()
 babel = Babel()
 ckeditor = CKEditor()
 csrf = CSRFProtect()
+
+class Guest(AnonymousUserMixin):
+    @property
+    def is_admin(self):
+        return False
+
+    def can(self, permission_name):
+        return False
+
+login.anonymous_user = Guest

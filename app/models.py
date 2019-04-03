@@ -99,8 +99,10 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
-    is_admin = db.Column(db.Boolean, default=False)
     confirmed = db.Column(db.Boolean, default=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+
+    role = db.relationship('Role', back_populates='users')
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     followed = db.relationship(
         'User', secondary=followers,
@@ -121,11 +123,28 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        self.set_role()
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def set_role(self):
+        if self.role is None:
+            self.role = Role.query.filter_by(name='User').first()
+
+    def can(self, permission_name):
+        permission = Permission.query.filter_by(name=permission_name).first()
+        return permission is not None and self.role is not None \
+               and permission in self.role.permissions
+
+    @property
+    def is_admin(self):
+        return self.role.name == 'Administrator'
 
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
@@ -335,6 +354,49 @@ class Comment(db.Model):
 
     def __repr__(self):
         return '<Comment {}: {}>'.format(self.id, self.body)
+
+
+roles_permissions = db.Table('roles_permissions',
+                             db.Column('role_id', db.Integer, db.ForeignKey('role.id')),
+                             db.Column('permission_id', db.Integer, db.ForeignKey('permission.id'))
+                             )
+
+
+class Permission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+    roles = db.relationship('Role', secondary=roles_permissions, back_populates='permissions')
+
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+    users = db.relationship('User', back_populates='role')
+    permissions = db.relationship('Permission', secondary=roles_permissions, back_populates='roles')
+
+    @staticmethod
+    def init_role():
+        roles_permissions_map = {
+            'Locked': ['FOLLOW'],
+            'User': ['FOLLOW', 'COMMENT', 'NEW_POST', 'NEW_CATEGORY'],
+            'Moderator': ['FOLLOW', 'COMMENT', 'NEW_POST', 'NEW_CATEGORY', 'MODERATE'],
+            'Administrator': ['FOLLOW', 'COMMENT', 'NEW_POST', 'NEW_CATEGORY', 'MODERATE', 'ADMINISTER']
+        }
+
+        for role_name in roles_permissions_map:
+            role = Role.query.filter_by(name=role_name).first()
+            if role is None:
+                role = Role(name=role_name)
+                db.session.add(role)
+            role.permissions = []
+            for permission_name in roles_permissions_map[role_name]:
+                permission = Permission.query.filter_by(name=permission_name).first()
+                if permission is None:
+                    permission = Permission(name=permission_name)
+                    db.session.add(permission)
+                role.permissions.append(permission)
+        db.session.commit()
+
 
 @login.user_loader
 def load_user(id):

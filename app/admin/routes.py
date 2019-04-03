@@ -4,10 +4,12 @@ from app.admin import bp
 from app.models import Post, Comment, Category
 from app.main.forms import CategoryForm
 from app.utils import redirect_back
+from app.decorators import permission_required, admin_required
 from flask_login import login_required, current_user
 
 @bp.route('/post/manage')
 @login_required
+@permission_required('MODERATE')
 def manage_post():
     page = request.args.get('page', 1, type=int)
     posts = Post.query.order_by(Post.timestamp.desc()).paginate(
@@ -17,6 +19,7 @@ def manage_post():
 
 @bp.route('/comment/manage')
 @login_required
+@permission_required('MODERATE')
 def manage_comment():
     filter_rule = request.args.get('filter', 'all')  # 'all', 'unreviewed', 'admin'
     page = request.args.get('page', 1, type=int)
@@ -34,6 +37,7 @@ def manage_comment():
 
 @bp.route('/comment/<int:comment_id>/set-comment-status', methods=['POST'])
 @login_required
+@permission_required('MODERATE')
 def set_comment_status(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     if comment.is_hidden:
@@ -48,6 +52,7 @@ def set_comment_status(comment_id):
 
 @bp.route('/comment/<int:comment_id>/delete', methods=['POST'])
 @login_required
+@permission_required('MODERATE')
 def delete_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     db.session.delete(comment)
@@ -58,12 +63,14 @@ def delete_comment(comment_id):
 
 @bp.route('/category/manage')
 @login_required
+@permission_required('MODERATE')
 def manage_category():
     return render_template('admin/manage_category.html')
 
 
 @bp.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 @login_required
+@permission_required('MODERATE')
 def edit_category(category_id):
     form = CategoryForm()
     category = Category.query.get_or_404(category_id)
@@ -82,6 +89,7 @@ def edit_category(category_id):
 
 @bp.route('/category/<int:category_id>/delete', methods=['POST'])
 @login_required
+@permission_required('MODERATE')
 def delete_category(category_id):
     category = Category.query.get_or_404(category_id)
     if category.id == 1:

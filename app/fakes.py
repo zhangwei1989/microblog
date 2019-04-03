@@ -2,7 +2,7 @@ import random
 
 from faker import Faker
 from app import db
-from app.models import Category, Post, User, Comment
+from app.models import Category, Post, User, Comment, Role
 from sqlalchemy.exc import IntegrityError
 
 
@@ -10,8 +10,9 @@ fake = Faker('zh')
 
 
 def fake_admin(username, email, password):
-    admin = User(username=username, email=email, is_admin=True)
+    admin = User(username=username, email=email)
     admin.set_password(password)
+    admin.role = Role.query.filter_by(name='Administrator').first()
 
     db.session.add(admin)
     db.session.commit()
