@@ -5,6 +5,7 @@ import rq
 import os
 import base64
 from flask import current_app, url_for
+from flask_avatars import Identicon
 from datetime import datetime, timedelta
 from time import time
 from app import db, login
@@ -100,6 +101,10 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
     confirmed = db.Column(db.Boolean, default=False)
+    avatar_s = db.Column(db.String(64))
+    avatar_m = db.Column(db.String(64))
+    avatar_l = db.Column(db.String(64))
+    avatar_raw = db.Column(db.String(64))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
 
     role = db.relationship('Role', back_populates='users')
@@ -125,7 +130,15 @@ class User(PaginatedAPIMixin, UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+        self.generate_avatar()
         self.set_role()
+
+    def generate_avatar(self):
+        avatar = Identicon()
+        filenames = avatar.generate(text=self.username)
+        self.avatar_s = filenames[0]
+        self.avatar_m = filenames[1]
+        self.avatar_l = filenames[2]
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

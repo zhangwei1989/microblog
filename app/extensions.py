@@ -7,6 +7,7 @@ from flask_moment import Moment
 from flask_babel import Babel
 from flask_ckeditor import CKEditor
 from flask_wtf import CSRFProtect
+from flask_avatars import Avatars
 
 
 db = SQLAlchemy()
@@ -20,6 +21,7 @@ moment = Moment()
 babel = Babel()
 ckeditor = CKEditor()
 csrf = CSRFProtect()
+avatars = Avatars()
 
 class Guest(AnonymousUserMixin):
     @property

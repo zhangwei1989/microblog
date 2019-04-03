@@ -64,8 +64,17 @@
                                         </span>
                                     </a>
                                 </li>
-                                {{ render_nav_item('main.user', 'Profile', username=current_user.username) }}
-                                {{ render_nav_item('auth.logout', 'Logout') }}
+                                <li class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                                       aria-haspopup="true"
+                                       aria-expanded="false">
+                                        {{ current_user.username }} <span class="caret"></span>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ url_for('main.user', username=current_user.username) }}">Profile</a>
+                                        <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a>
+                                    </div>
+                                </li>
                             {% endif %}
                         </ul>
                         <!-- 生产环境的配置无法运行 elasticsearch，暂时注释掉

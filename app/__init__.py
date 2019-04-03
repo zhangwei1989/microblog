@@ -7,7 +7,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask, request, current_app
 from config import Config
 from elasticsearch import Elasticsearch
-from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor, csrf
+from app.extensions import db, migrate, login, mail, bootstrap, moment, babel, ckeditor, csrf, avatars
 from app.models import User, Post, Message, Notification, Task, Category, Comment, Role
 
 
@@ -62,6 +62,7 @@ def register_extensions(app):
     babel.init_app(app)
     ckeditor.init_app(app)
     csrf.init_app(app)
+    avatars.init_app(app)
 
     from app.api import bp as api_bp
     csrf.exempt(api_bp)

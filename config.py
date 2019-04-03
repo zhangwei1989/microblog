@@ -17,6 +17,9 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = ('zhang', 'zhangwei19890518@gmail.com')
     ADMINS = ['zhangwei19890518@gmail.com']
+    BLOG_UPLOAD_PATH = os.path.join(basedir, 'uploads')
+    AVATARS_SAVE_PATH = os.path.join(BLOG_UPLOAD_PATH, 'avatars')
+    AVATARS_SIZE_TUPLE = (30, 100, 200)
 
     POSTS_PER_PAGE = 20
     COMMENTS_PER_PAGE = 10

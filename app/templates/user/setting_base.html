@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/nav.html' import render_nav_item %}
+
+{% block app_content %}
+    <div class="page-header">
+        <h1>Settings</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="nav nav-pills flex-column" role="tablist" aria-orientation="vertical">
+                {{ render_nav_item('main.edit_profile', 'Edit Profile') }}
+                {{ render_nav_item('main.change_avatar', 'Change Avatar') }}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Change Password</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Change Email</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Notification</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Privacy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Delete Account</a>
+                </li>
+            </div>
+        </div>
+        <div class="col-md-9">
+            {% block setting_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock app_content %}

@@ -1,5 +1,6 @@
 from flask import request
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SubmitField, TextAreaField, SelectField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Length, Email, Optional, URL
 from flask_babel import _, lazy_gettext as _l
@@ -74,3 +75,19 @@ class MessageForm(FlaskForm):
     message = TextAreaField('Message', validators=[
         DataRequired(), Length(min=0, max=140)])
     submit = SubmitField('Submit')
+
+
+class UploadAvatarForm(FlaskForm):
+    image = FileField('Upload', validators=[
+        FileRequired(),
+        FileAllowed(['jpg', 'png'], 'The file format should be .jpg or .png.')
+    ])
+    submit = SubmitField()
+
+
+class CropAvatarForm(FlaskForm):
+    x = HiddenField()
+    y = HiddenField()
+    w = HiddenField()
+    h = HiddenField()
+    submit = SubmitField('Crop and Update')

@@ -1,16 +1,17 @@
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, g, \
-    jsonify, current_app, abort
+    jsonify, current_app, abort, send_from_directory
 from flask_login import current_user, login_required
 from flask_babel import _, get_locale
 from guess_language import guess_language
-from app import db
-from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, CategoryForm, CommentForm, UserCommentForm
+from app import db, avatars
+from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, CategoryForm, \
+    CommentForm, UserCommentForm, UploadAvatarForm, CropAvatarForm
 from app.models import User, Post, Message, Notification, Category, Comment
 from app.translate import translate
 from app.main import bp
-from app.decorators import admin_required, permission_required
-from app.utils import redirect_back
+from app.decorators import admin_required, permission_required, confirm_required
+from app.utils import redirect_back, flash_errors
 
 
 @bp.before_app_request
@@ -219,7 +220,7 @@ def edit_profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title=_('Edit Profile'),
+    return render_template('user/edit_profile.html', title=_('Edit Profile'),
                            form=form)
 
 
@@ -325,3 +326,52 @@ def export_posts():
         current_user.launch_task('export_posts', 'Exporting posts...')
         db.session.commit()
     return redirect(url_for('main.user', username=current_user.username))
+
+
+@bp.route('/avatars/<path:filename>')
+def get_avatar(filename):
+    return send_from_directory(current_app.config['AVATARS_SAVE_PATH'], filename)
+
+
+@bp.route('/settings/avatar')
+@login_required
+@confirm_required
+def change_avatar():
+    upload_form = UploadAvatarForm()
+    crop_form = CropAvatarForm()
+    return render_template('user/change_avatar.html', upload_form=upload_form, crop_form=crop_form)
+
+
+@bp.route('/settings/avatar/upload', methods=['POST'])
+@login_required
+@confirm_required
+def upload_avatar():
+    form = UploadAvatarForm()
+    if form.validate_on_submit():
+        image = form.image.data
+        filename = avatars.save_avatar(image)
+        current_user.avatar_raw = filename
+        db.session.commit()
+        flash('Image uploaded, please crop.', 'success')
+    flash_errors(form)
+    return redirect(url_for('main.change_avatar'))
+
+
+@bp.route('/settings/avatar/crop', methods=['POST'])
+@login_required
+@confirm_required
+def crop_avatar():
+    form = CropAvatarForm()
+    if form.validate_on_submit():
+        x = form.x.data
+        y = form.y.data
+        w = form.w.data
+        h = form.h.data
+        filenames = avatars.crop_avatar(current_user.avatar_raw, x, y, w, h)
+        current_user.avatar_s = filenames[0]
+        current_user.avatar_m = filenames[1]
+        current_user.avatar_l = filenames[2]
+        db.session.commit()
+        flash('Avatar updated.', 'success')
+    flash_errors(form)
+    return redirect(url_for('main.change_avatar'))
